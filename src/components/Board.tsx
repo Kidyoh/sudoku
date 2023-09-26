@@ -248,6 +248,8 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
     const newBoard = [...board];
     newBoard[row][col] = value;
     setBoard(newBoard);
+    
+    checkSolution(newBoard);
   }
 
   function getBoxIndex(row: number, col: number): number {
@@ -256,20 +258,66 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
 
   const selectedBoxIndex = selectedCell ? getBoxIndex(selectedCell[0], selectedCell[1]) : -1;
 
-  function checkSolution() {
-    const isBoardSolved = board.every((row, rowIndex) =>
+  function getBoxStart(boxIndex: number): [number, number] {
+    const row = Math.floor(boxIndex / 3) * 3;
+    const col = (boxIndex % 3) * 3;
+    return [row, col];
+  }
+
+  function checkSolution(newBoard: BoardState) {
+    const isBoardSolved = newBoard.every((row, rowIndex) =>
       row.every((cellValue, colIndex) => cellValue === solution[rowIndex][colIndex])
     );
     setIsSolved(isBoardSolved);
   
-    const newBoard = [...board];
+    // Check each row for duplicates
     for (let row = 0; row < 9; row++) {
+      const rowValues = new Set<number>();
       for (let col = 0; col < 9; col++) {
-        if (newBoard[row][col] !== solution[row][col]) {
-          newBoard[row][col] = null;
+        const value = newBoard[row][col];
+        if (value !== null) {
+          if (rowValues.has(value)) {
+            alert(`Duplicate value ${value} in row ${row + 1}`);
+            return;
+          }
+          rowValues.add(value);
         }
       }
     }
+  
+    // Check each column for duplicates
+    for (let col = 0; col < 9; col++) {
+      const colValues = new Set<number>();
+      for (let row = 0; row < 9; row++) {
+        const value = newBoard[row][col];
+        if (value !== null) {
+          if (colValues.has(value)) {
+            alert(`Duplicate value ${value} in column ${col + 1}`);
+            return;
+          }
+          colValues.add(value);
+        }
+      }
+    }
+  
+    // Check each box for duplicates
+    for (let box = 0; box < 9; box++) {
+      const boxValues = new Set<number>();
+      const [startRow, startCol] = getBoxStart(box);
+      for (let row = startRow; row < startRow + 3; row++) {
+        for (let col = startCol; col < startCol + 3; col++) {
+          const value = newBoard[row][col];
+          if (value !== null) {
+            if (boxValues.has(value)) {
+              alert(`Duplicate value ${value} in box ${box + 1}`);
+              return;
+            }
+            boxValues.add(value);
+          }
+        }
+      }
+    }
+  
     setBoard(newBoard);
   }
 
@@ -325,6 +373,9 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
 
     alert("No valid move found for the selected cell.");
   }
+  function checkSolutionWrapper() {
+    checkSolution(board); // Call the original checkSolution function with the board
+  }
 
   return (
     <div>
@@ -352,11 +403,11 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
           isLocked={isCellInitiallyGenerated}
           isIncorrect={isIncorrect} // new prop
         />
-      );
+      ); 
     })}
   </div>
 ))}
-      <GameControls checkSolution={checkSolution} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint}/>
+      <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint}/>
       {!isSolved && (
         <Timer />
       )}
