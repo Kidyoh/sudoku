@@ -20,7 +20,7 @@ function Timer() {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  return <div>Time: {formatTime(time)}</div>;
+  return <div className='text-black'>Time: {formatTime(time)}</div>;
 }
 
 export default Timer;

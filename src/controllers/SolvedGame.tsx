@@ -4,7 +4,7 @@ interface CongratulationsMessageProps {
 }
 
 function CongratulationsMessage({ isVisible }: CongratulationsMessageProps) {
-  return isVisible && <div>Congratulations, you solved the puzzle!</div>;
+  return isVisible && <div  className='text-black'>Congratulations, you solved the puzzle!</div>;
 }
 
 export default CongratulationsMessage;

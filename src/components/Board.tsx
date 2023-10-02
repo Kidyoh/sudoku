@@ -13,10 +13,10 @@ export enum Difficulty {
   Hard = 2,
 }
 function formatTime(seconds: number): string {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
 function generateBoard(): BoardState {
   const board: BoardState = Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => null));
@@ -115,7 +115,7 @@ function generatePuzzle(difficulty: Difficulty): BoardState {
     const solutions = findAllSolutions(puzzle);
 
     if (solutions.length !== 1) {
-      puzzle[row][col] = cellValue; 
+      puzzle[row][col] = cellValue;
     } else {
       numCellsRemoved++;
       if (numCellsRemoved === numCellsToRemove) {
@@ -162,61 +162,64 @@ function findAllSolutions(board: BoardState): BoardState[] {
 }
 
 function solveSudoku(board: BoardState): BoardState | null {
-    function solve(row: number, col: number): boolean {
-      if (row === 9) {
-        return true; 
-      }
-  
-      if (board[row][col] !== null) {
-    
+  function solve(row: number, col: number): boolean {
+    if (row === 9) {
+      return true;
+    }
+
+    if (board[row][col] !== null) {
+
+      const nextRow = col === 8 ? row + 1 : row;
+      const nextCol = col === 8 ? 0 : col + 1;
+      return solve(nextRow, nextCol);
+    }
+
+    for (let num = 1; num <= 9; num++) {
+      if (isValidMove(board, row, col, num)) {
+        board[row][col] = num;
+
         const nextRow = col === 8 ? row + 1 : row;
         const nextCol = col === 8 ? 0 : col + 1;
-        return solve(nextRow, nextCol);
-      }
-  
-      for (let num = 1; num <= 9; num++) {
-        if (isValidMove(board, row, col, num)) {
-          board[row][col] = num;
-  
-          const nextRow = col === 8 ? row + 1 : row;
-          const nextCol = col === 8 ? 0 : col + 1;
-  
-          if (solve(nextRow, nextCol)) {
-            return true;
-          }
-  
-         
-          board[row][col] = null;
-        }
-      }
-  
-      return false;
-    }
-  
-    if (solve(0, 0)) {
-      
-      return board; 
-    } else {
-      return null; 
-    }
-  }
-  
 
-function Board({ difficulty }: { difficulty: Difficulty }) {
+        if (solve(nextRow, nextCol)) {
+          return true;
+        }
+
+
+        board[row][col] = null;
+      }
+    }
+
+    return false;
+  }
+
+  if (solve(0, 0)) {
+
+    return board;
+  } else {
+    return null;
+  }
+}
+
+
+function Board({ difficulty }: { difficulty: Difficulty; }) {
   const [solution, setSolution] = useState(generateBoard());
   const [board, setBoard] = useState(generatePuzzle(difficulty));
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
   const [isSolved, setIsSolved] = useState(false);
   const [time, setTime] = useState(0);
- const [currentTime, setCurrentTime] = useState(formatTime(time)); // New state variable
+  const [currentTime, setCurrentTime] = useState(formatTime(time)); // New state variable
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+
 
   useEffect(() => {
     const intervalId = setInterval(() => {
+      currentTime
       setTime((time) => time + 1);
-      setCurrentTime(formatTime(time + 1)); // Update currentTime
+      setCurrentTime(formatTime(time + 1)); // Update  curent time
     }, 1000);
     return () => clearInterval(intervalId);
-  }, [time]); 
+  }, [time]);
 
   const initiallyGeneratedCells: [number, number][] = [];
   const initialBoardSnapshot: BoardState = generatePuzzle(difficulty);
@@ -228,6 +231,7 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
       }
     }
   }
+
 
   function handleCellClick(row: number, col: number) {
     const isInitiallyGenerated = initiallyGeneratedCells.some(
@@ -241,16 +245,21 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
 
 
 
- 
 
+
+  function handleNumberButtonClick(number: number) {
+    setSelectedNumber(selectedNumber === number ? null : number);
+  }
 
   function handleCellValueChange(row: number, col: number, value: CellValue) {
     const newBoard = [...board];
-    newBoard[row][col] = value;
+    newBoard[row][col] = value !== null ? value : selectedNumber;
     setBoard(newBoard);
-    
+    setSelectedNumber(null);
     checkSolution(newBoard);
   }
+  
+
 
   function getBoxIndex(row: number, col: number): number {
     return Math.floor(row / 3) * 3 + Math.floor(col / 3);
@@ -269,7 +278,7 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
       row.every((cellValue, colIndex) => cellValue === solution[rowIndex][colIndex])
     );
     setIsSolved(isBoardSolved);
-  
+
     // Check each row for duplicates
     for (let row = 0; row < 9; row++) {
       const rowValues = new Set<number>();
@@ -284,7 +293,7 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
         }
       }
     }
-  
+
     // Check each column for duplicates
     for (let col = 0; col < 9; col++) {
       const colValues = new Set<number>();
@@ -299,7 +308,7 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
         }
       }
     }
-  
+
     // Check each box for duplicates
     for (let box = 0; box < 9; box++) {
       const boxValues = new Set<number>();
@@ -317,7 +326,7 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
         }
       }
     }
-  
+
     setBoard(newBoard);
   }
 
@@ -339,14 +348,23 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
       alert("No solution exists for the given Sudoku puzzle.");
     }
   }
-
   function getHint(): void {
     const emptyCells: [number, number][] = [];
+
+    // Create a map to count the number of valid candidates for each empty cell
+    const candidateCounts = new Map<string, number>();
 
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         if (board[row][col] === null) {
           emptyCells.push([row, col]);
+          const candidates = [];
+          for (let candidate = 1; candidate <= 9; candidate++) {
+            if (isValidMove(board, row, col, candidate)) {
+              candidates.push(candidate);
+            }
+          }
+          candidateCounts.set(`${row}-${col}`, candidates.length);
         }
       }
     }
@@ -356,65 +374,93 @@ function Board({ difficulty }: { difficulty: Difficulty }) {
       return;
     }
 
-    const randomIndex = Math.floor(Math.random() * emptyCells.length);
-    const [row, col] = emptyCells[randomIndex];
+    // Sort empty cells by the number of candidates (fewest first)
+    emptyCells.sort(
+      (a, b) =>
+        (candidateCounts.get(`${a[0]}-${a[1]}`) || 0) -
+        (candidateCounts.get(`${b[0]}-${b[1]}`) || 0)
+    );
 
-    const candidates = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    for (const [row, col] of emptyCells) {
+      const candidates = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
-    for (const candidate of candidates) {
-      if (isValidMove(board, row, col, candidate)) {
-        const newBoard = [...board];
-        newBoard[row][col] = candidate;
-        setBoard(newBoard);
-        setSelectedCell([row, col]);
-        return;
+      for (const candidate of candidates) {
+        if (isValidMove(board, row, col, candidate)) {
+          const newBoard = [...board];
+          newBoard[row][col] = candidate;
+          setBoard(newBoard);
+          setSelectedCell([row, col]);
+          return;
+        }
       }
     }
 
     alert("No valid move found for the selected cell.");
   }
+
+
   function checkSolutionWrapper() {
     checkSolution(board); // Call the original checkSolution function with the board
   }
 
-  return (
-    <div>
-      {board.map((row, rowIndex) => (
-  <div key={rowIndex}>
-    {row.map((cellValue, colIndex) => {
-      const isSameRow = selectedCell && selectedCell[0] === rowIndex;
-      const isSameCol = selectedCell && selectedCell[1] === colIndex;
-      const isSameBox = selectedCell && getBoxIndex(rowIndex, colIndex) === selectedBoxIndex;
-      const isHighlighted = isSameRow || isSameCol || isSameBox;
-      const isCellInitiallyGenerated = initiallyGeneratedCells.some(
-        ([generatedRow, generatedCol]) =>
-          generatedRow === rowIndex && generatedCol === colIndex
-      );
-      const isIncorrect = cellValue !== null && cellValue !== solution[rowIndex][colIndex];
+  const lockedCells = Array.from({ length: 9 }, () =>
+    Array.from({ length: 9 }, () => false)
+  );
 
-      return (
-        <Cell
-          key={colIndex}
-          value={cellValue}
-          isSelected={selectedCell && selectedCell[0] === rowIndex && selectedCell[1] === colIndex ? true : false}
-          isHighlighted={isHighlighted ? true : false}
-          onClick={() => handleCellClick(rowIndex, colIndex)}
-          onValueChange={(value) => handleCellValueChange(rowIndex, colIndex, value)}
-          isLocked={isCellInitiallyGenerated}
-          isIncorrect={isIncorrect} // new prop
-        />
-      ); 
-    })}
-  </div>
-))}
-      <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint}/>
-      {!isSolved && (
-        <Timer />
-      )}
-    {isSolved && (
-        
-        <CongratulationsMessage isVisible={isSolved} />
-    )}
+  for (const [row, col] of initiallyGeneratedCells) {
+    lockedCells[row][col] = true;
+  }
+
+  const numberButtons = Array.from({ length: 9 }, (_, index) => index + 1);
+
+  return (
+    <div className=' ml-12 items-center justify-center'>
+      {board.map((row, rowIndex) => (
+        <div key={rowIndex}>
+          {row.map((cellValue, colIndex) => {
+            const isSameRow = selectedCell && selectedCell[0] === rowIndex;
+            const isSameCol = selectedCell && selectedCell[1] === colIndex;
+            const isSameBox = selectedCell && getBoxIndex(rowIndex, colIndex) === selectedBoxIndex;
+            const isHighlighted = isSameRow || isSameCol || isSameBox;
+            const isCellInitiallyGenerated = lockedCells[rowIndex][colIndex];
+            const isIncorrect = cellValue !== null && cellValue !== solution[rowIndex][colIndex];
+
+            return (
+              <Cell
+                isLocked={lockedCells[rowIndex][colIndex]}
+                initiallyGeneratedCells={initiallyGeneratedCells}
+                key={colIndex}
+                value={cellValue}
+                isSelected={
+                  selectedCell !== null && selectedCell[0] === rowIndex && selectedCell[1] === colIndex
+                }
+                isHighlighted={isHighlighted ? true : false}
+                onClick={() => handleCellClick(rowIndex, colIndex)}
+                onChange={(value) => handleCellValueChange(rowIndex, colIndex, value)}
+                solutionValue={solution[rowIndex][colIndex]}
+                initiallyGenerated={initiallyGeneratedCells.includes([rowIndex, colIndex])}
+                isIncorrect={isIncorrect}
+              />
+            );
+          })}
+          
+        </div>
+      ))}
+      <div className="number-buttons">
+        {numberButtons.map((number) => (
+          <button
+            key={number}
+            className={`number-button${selectedNumber === number ? ' selected' : ''}`}
+            onClick={() => handleNumberButtonClick(number)}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+      <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint} />
+      {!isSolved && <Timer />}
+      {isSolved && <CongratulationsMessage isVisible={isSolved} />}
+     
     </div>
   );
 }

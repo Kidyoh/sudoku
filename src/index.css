@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -16,24 +20,29 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: white;
+  text-decoration: none;
+  transition: color 0.25s; /* Smooth color transition on hover */
 }
 a:hover {
-  color: #535bf2;
+  color: white;
 }
 
 body {
   margin: 0;
   display: flex;
+  align-items: center;
+  justify-content: center;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #333; /* Fallback background color */
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: #fff; /* Set heading color */
 }
 
 button {
@@ -44,26 +53,30 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
+  color: #fff; /* Text color for buttons */
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color 0.25s, background-color 0.25s, color 0.25s; /* Smooth transitions */
 }
 button:hover {
   border-color: #646cff;
+  background-color: #333; /* Change background color on hover */
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Light mode styles */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+    color: white;
   }
   button {
     background-color: #f9f9f9;
+    color: #333; /* Text color for buttons in light mode */
   }
 }
