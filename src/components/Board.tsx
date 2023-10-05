@@ -94,16 +94,16 @@ function generatePuzzle(difficulty: Difficulty): BoardState {
 
   switch (difficulty) {
     case Difficulty.Easy:
-      numCellsToRemove = 40;
+      numCellsToRemove = 30;
       break;
     case Difficulty.Medium:
-      numCellsToRemove = 50;
+      numCellsToRemove = 40;
       break;
     case Difficulty.Hard:
-      numCellsToRemove = 60;
+      numCellsToRemove = 50;
       break;
     default:
-      numCellsToRemove = 50;
+      numCellsToRemove = 40;
   }
 
   let numCellsRemoved = 0;
@@ -208,18 +208,34 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
   const [isSolved, setIsSolved] = useState(false);
   const [time, setTime] = useState(0);
-  const [currentTime, setCurrentTime] = useState(formatTime(time)); // New state variable
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
-
+  const [currentTime, setCurrentTime] = useState(formatTime(time));
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null); // Added state for selected number
+  const [solvedTime, setSolvedTime] = useState<string | null>(null);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      currentTime
       setTime((time) => time + 1);
-      setCurrentTime(formatTime(time + 1)); // Update  curent time
     }, 1000);
     return () => clearInterval(intervalId);
+  }, []);
+  
+  useEffect(() => {
+    setCurrentTime(formatTime(time)); // Update current time with the formatted time
   }, [time]);
+
+  useEffect(() => {
+    setIsSolved(board.every((row) => row.every((cell) => cell !== null)));
+    // When the board is solved, save the solved time
+    if (isSolved) {
+      setSolvedTime(currentTime);
+    }
+  }, [board]);
+
+  //to show the congratulation message if the board is solved
+  useEffect(() => {
+    setIsSolved(board.every((row) => row.every((cell) => cell !== null)));
+  }, [board]);
+
 
   const initiallyGeneratedCells: [number, number][] = [];
   const initialBoardSnapshot: BoardState = generatePuzzle(difficulty);
@@ -246,19 +262,19 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
 
 
 
-
   function handleNumberButtonClick(number: number) {
-    setSelectedNumber(selectedNumber === number ? null : number);
+    setSelectedNumber(selectedNumber === number ? null : number); // Toggle selected number
   }
 
   function handleCellValueChange(row: number, col: number, value: CellValue) {
     const newBoard = [...board];
-    newBoard[row][col] = value !== null ? value : selectedNumber;
+    newBoard[row][col] = value !== null ? value : selectedNumber; // Use selected number if not null
     setBoard(newBoard);
-    setSelectedNumber(null);
+    setSelectedNumber(null); // Reset selected number
     checkSolution(newBoard);
   }
-  
+
+
 
 
   function getBoxIndex(row: number, col: number): number {
@@ -334,6 +350,8 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
     setBoard(generatePuzzle(difficulty));
     setSelectedCell(null);
     setIsSolved(false);
+    setTime(0);
+    setCurrentTime(formatTime(0));
   }
 
 
@@ -443,7 +461,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
               />
             );
           })}
-          
+
         </div>
       ))}
       <div className="number-buttons">
@@ -459,8 +477,8 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
       </div>
       <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint} />
       {!isSolved && <Timer />}
-      {isSolved && <CongratulationsMessage isVisible={isSolved} />}
-     
+      {isSolved && <CongratulationsMessage isVisible={isSolved} time={solvedTime || 'N/A' } />}
+
     </div>
   );
 }
