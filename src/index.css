@@ -58,8 +58,7 @@ button {
   transition: border-color 0.25s, background-color 0.25s, color 0.25s; /* Smooth transitions */
 }
 button:hover {
-  border-color: #646cff;
-  background-color: #333; /* Change background color on hover */
+  border-color: #646cff; /* Change background color on hover */
 }
 button:focus,
 button:focus-visible {

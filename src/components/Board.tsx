@@ -204,13 +204,17 @@ function solveSudoku(board: BoardState): BoardState | null {
 
 function Board({ difficulty }: { difficulty: Difficulty; }) {
   const [solution, setSolution] = useState(generateBoard());
+
+  useEffect(() => {
+    setSolution(generateBoard());
+  }, []);
   const [board, setBoard] = useState(generatePuzzle(difficulty));
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null);
   const [isSolved, setIsSolved] = useState(false);
   const [time, setTime] = useState(0);
   const [currentTime, setCurrentTime] = useState(formatTime(time));
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null); // Added state for selected number
   const [solvedTime, setSolvedTime] = useState<string | null>(null);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null); // New state for selected number
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -218,7 +222,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
     }, 1000);
     return () => clearInterval(intervalId);
   }, []);
-  
+
   useEffect(() => {
     setCurrentTime(formatTime(time)); // Update current time with the formatted time
   }, [time]);
@@ -259,12 +263,6 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
     }
   }
 
-
-
-
-  function handleNumberButtonClick(number: number) {
-    setSelectedNumber(selectedNumber === number ? null : number); // Toggle selected number
-  }
 
   function handleCellValueChange(row: number, col: number, value: CellValue) {
     const newBoard = [...board];
@@ -440,7 +438,6 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
             const isSameCol = selectedCell && selectedCell[1] === colIndex;
             const isSameBox = selectedCell && getBoxIndex(rowIndex, colIndex) === selectedBoxIndex;
             const isHighlighted = isSameRow || isSameCol || isSameBox;
-            const isCellInitiallyGenerated = lockedCells[rowIndex][colIndex];
             const isIncorrect = cellValue !== null && cellValue !== solution[rowIndex][colIndex];
 
             return (
@@ -458,18 +455,20 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
                 solutionValue={solution[rowIndex][colIndex]}
                 initiallyGenerated={initiallyGeneratedCells.includes([rowIndex, colIndex])}
                 isIncorrect={isIncorrect}
+                selectedNumber={selectedNumber}
+                setSelectedNumber={setSelectedNumber}
               />
             );
           })}
 
         </div>
       ))}
-      <div className="number-buttons">
+     <div className="number-buttons">
         {numberButtons.map((number) => (
           <button
             key={number}
             className={`number-button${selectedNumber === number ? ' selected' : ''}`}
-            onClick={() => handleNumberButtonClick(number)}
+            onClick={() => setSelectedNumber(selectedNumber === number ? null : number)} // Set selected number
           >
             {number}
           </button>
@@ -477,7 +476,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
       </div>
       <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint} />
       {!isSolved && <Timer />}
-      {isSolved && <CongratulationsMessage isVisible={isSolved} time={solvedTime || 'N/A' } />}
+      {isSolved && <CongratulationsMessage isVisible={isSolved} time={solvedTime || 'N/A'} />}
 
     </div>
   );
