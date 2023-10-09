@@ -229,13 +229,11 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
 
   useEffect(() => {
     setIsSolved(board.every((row) => row.every((cell) => cell !== null)));
-    // When the board is solved, save the solved time
     if (isSolved) {
       setSolvedTime(currentTime);
     }
   }, [board]);
 
-  //to show the congratulation message if the board is solved
   useEffect(() => {
     setIsSolved(board.every((row) => row.every((cell) => cell !== null)));
   }, [board]);
@@ -430,7 +428,8 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
   const numberButtons = Array.from({ length: 9 }, (_, index) => index + 1);
 
   return (
-    <div className=' ml-12 items-center justify-center'>
+    <div className=' container mx-auto p-4'>
+       <h1 className="text-3xl font-semibold mb-4 text-center text-black">Shega Sudoku Game</h1>
       {board.map((row, rowIndex) => (
         <div key={rowIndex}>
           {row.map((cellValue, colIndex) => {
@@ -439,6 +438,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
             const isSameBox = selectedCell && getBoxIndex(rowIndex, colIndex) === selectedBoxIndex;
             const isHighlighted = isSameRow || isSameCol || isSameBox;
             const isIncorrect = cellValue !== null && cellValue !== solution[rowIndex][colIndex];
+              <span>Shega Sudoku</span>
 
             return (
               <Cell
@@ -463,6 +463,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
 
         </div>
       ))}
+      <br />
      <div className="number-buttons">
         {numberButtons.map((number) => (
           <button
@@ -476,7 +477,9 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
       </div>
       <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint} />
       {!isSolved && <Timer />}
-      {isSolved && <CongratulationsMessage isVisible={isSolved} time={solvedTime || 'N/A'} />}
+      {isSolved && (
+      <CongratulationsMessage isVisible={isSolved} time={formatTime(Number(solvedTime) || 0)} />
+)}
 
     </div>
   );

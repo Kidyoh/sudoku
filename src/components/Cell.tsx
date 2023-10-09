@@ -9,8 +9,8 @@ interface CellProps {
   onChange: (value: number | null) => void;
   initiallyGeneratedCells: [number, number][];
   isIncorrect: boolean;
-  selectedNumber: number | null; // New prop for the selected number
-  setSelectedNumber: (number: number | null) => void; // Callback to set the selected number
+  selectedNumber: number | null; 
+  setSelectedNumber: (number: number | null) => void;
 }
 
 function Cell(props: CellProps) {
@@ -23,22 +23,22 @@ function Cell(props: CellProps) {
     onClick,
     onChange,
     selectedNumber,
-    setSelectedNumber, // New prop
+    setSelectedNumber, 
   } = props;
 
   const isLocked = initiallyGenerated;
   const isIncorrect = value !== solutionValue;
 
   const handleCellClick = () => {
-    // Check if the cell is not locked and a number button is selected
     if (!isLocked && selectedNumber !== null) {
-      onChange(selectedNumber); // Set the cell value to the selected number
-      setSelectedNumber(null); // Clear the selected number
+      onChange(selectedNumber); 
+      setSelectedNumber(null); 
     }
     onClick();
   };
 
   return (
+    
     <div
       className={`inline-flex border border-black w-10 h-10 justify-center items-center cursor-pointer transition duration-200 ease-in-out ${
         isSelected ? 'bg-blue-200' : isHighlighted ? 'bg-gray-200' : 'bg-white'
@@ -55,6 +55,7 @@ function Cell(props: CellProps) {
         }
       }}
     >
+      
       <input
         min="1"
         max="9"

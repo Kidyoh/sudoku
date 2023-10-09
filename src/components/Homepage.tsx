@@ -35,7 +35,7 @@ function HomePage() {
   }
 
   return (
-    <div className="flex items-center justify-center bg-gray-100">
+    <div className="flex items-center justify-center bg-gray-100 mx-auto">
       <div className="flex items-center justify-center p-12 rounded-lg shadow-md">
         {selectedDifficulty === null ? (
           <div>
@@ -63,6 +63,7 @@ function HomePage() {
           </div>
         ) : (
           <>
+          
             <Board difficulty={selectedDifficulty} />
             {animationVisible && (
               <div ref={animationContainer} style={{ width: '200px', height: '200px' }}></div>
