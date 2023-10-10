@@ -5,7 +5,7 @@ interface GameControlsProps {
   getHint: () => void;
 }
 
-function GameControls({ checkSolution, resetBoard, solvePuzzle, getHint }: GameControlsProps) {
+function GameControls({ checkSolution, resetBoard, solvePuzzle, getHint}: GameControlsProps) {
   return (
     <div className="flex justify-center space-x-4 my-4">
       <button

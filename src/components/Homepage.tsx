@@ -64,7 +64,10 @@ function HomePage() {
         ) : (
           <>
           
-            <Board difficulty={selectedDifficulty} />
+          <div className='text-center'>
+            <Board difficulty={selectedDifficulty}  />
+           
+            </div>
             {animationVisible && (
               <div ref={animationContainer} style={{ width: '200px', height: '200px' }}></div>
             )}

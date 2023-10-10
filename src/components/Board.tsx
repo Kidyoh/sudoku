@@ -214,7 +214,8 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
   const [time, setTime] = useState(0);
   const [currentTime, setCurrentTime] = useState(formatTime(time));
   const [solvedTime, setSolvedTime] = useState<string | null>(null);
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null); // New state for selected number
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null); 
+  const [gameHistory, setGameHistory] = useState<{ board: BoardState; selectedCell: [number, number] | null }[]>([]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -249,6 +250,29 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
       }
     }
   }
+  function saveGameState() {
+    const newState = { board, selectedCell };
+    setGameHistory([...gameHistory, newState]);
+  }
+
+  function handleUndo() {
+    if (gameHistory.length > 0) {
+      // Get the previous game state from the history
+      const previousState = gameHistory[gameHistory.length - 1];
+  
+      // Set the previous state as the current state
+      setBoard(previousState.board);
+      setSelectedCell(previousState.selectedCell);
+  
+      // Remove the last state from the history
+      setGameHistory(gameHistory.slice(0, -1));
+    }
+  }
+
+  useEffect(() => {
+    saveGameState();
+  }, [board, selectedCell]);
+  
 
 
   function handleCellClick(row: number, col: number) {
@@ -475,7 +499,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
           </button>
         ))}
       </div>
-      <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint} />
+      <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint} handleUndo={handleUndo}/>
       {!isSolved && <Timer />}
       {isSolved && (
       <CongratulationsMessage isVisible={isSolved} time={formatTime(Number(solvedTime) || 0)} />
