@@ -216,6 +216,8 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
   const [solvedTime, setSolvedTime] = useState<string | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null); 
 
+  solvedTime
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTime((time) => time + 1);
@@ -479,7 +481,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
       <GameControls checkSolution={checkSolutionWrapper} solvePuzzle={solvePuzzle} resetBoard={resetBoard} getHint={getHint}/>
       {!isSolved && <Timer />}
       {isSolved && (
-      <CongratulationsMessage isVisible={isSolved} time={formatTime(Number(solvedTime) || 0)} />
+      <CongratulationsMessage isVisible={isSolved} />
 )}
 
     </div>

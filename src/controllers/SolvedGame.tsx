@@ -1,12 +1,11 @@
 interface CongratulationsMessageProps {
   isVisible: boolean;
-  time: string; 
 }
 
-function CongratulationsMessage({ isVisible, time }: CongratulationsMessageProps) {
+function CongratulationsMessage({ isVisible }: CongratulationsMessageProps) {
   return isVisible && (
     <div className='text-black'>
-      Congratulations, you solved the puzzle in {time}!
+      Congratulations, you solved the puzzle!
     </div>
   );
 }
