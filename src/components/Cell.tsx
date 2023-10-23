@@ -66,7 +66,7 @@ function Cell(props: CellProps) {
           }
         }}
         readOnly={isLocked}
-        className={`w-4/5 h-4/5 border-none bg-transparent text-2xl font-bold ${
+        className={`w-4/5 h-4/5 border-none bg-transparent text-2xl font-bold dark:text-black ${
           isLocked ? 'pointer-events-none text-gray-500' : 'pointer-events-auto'
         }`}
       />

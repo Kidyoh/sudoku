@@ -431,7 +431,7 @@ function Board({ difficulty }: { difficulty: Difficulty; }) {
   const numberButtons = Array.from({ length: 9 }, (_, index) => index + 1);
 
   return (
-    <div className=' container mx-auto p-4'>
+    <div className=' container mx-auto p-4 dark:text-white'>
        <h1 className="text-3xl font-semibold mb-4 text-center text-black">Shega Sudoku Game</h1>
       {board.map((row, rowIndex) => (
         <div key={rowIndex}>

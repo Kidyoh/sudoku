@@ -49,6 +49,7 @@ button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
+  justify-content: space-between;;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
@@ -67,6 +68,21 @@ button:focus-visible {
 
 /* Light mode styles */
 @media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: white;
+  }
+  button {
+    background-color: #f9f9f9;
+    color: #333; /* Text color for buttons in light mode */
+  }
+
+
+}
+@media (prefers-color-scheme: dark) {
   :root {
     color: #213547;
     background-color: #ffffff;
